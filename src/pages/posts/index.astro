@@ -18,6 +18,7 @@ entries = entries.sort((a, b) => new Date(b.data.datePosted).getTime() - new Dat
                     tagline={entry.data.tagline}
                     datePosted={entry.data.datePosted}
                     slug={entry.slug}
+                    tags={entry.data.tags}
                 />
             ))}
         </div>

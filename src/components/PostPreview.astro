@@ -1,7 +1,10 @@
 ---
-const { title, tagline, datePosted, slug } = Astro.props;
+import Tags from "./Tags.astro";
+
+const { title, tagline, datePosted, slug, tags } = Astro.props;
 const formatter = new Intl.DateTimeFormat('en-US', {day: '2-digit', month: 'long', year: 'numeric'});
 const parsedDate = new Date(datePosted);
+const parsedTags = tags ? tags.split(",") : [];
 ---
 <article>
     <h3>
@@ -13,12 +16,13 @@ const parsedDate = new Date(datePosted);
         </time>
     </small>
     {tagline && <small>{tagline}</small>}
+    {parsedTags ? <Tags tags={parsedTags} /> : null}
 </article>
 
 <style>
     article {
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        gap: 0.5rem;
     }
 </style>

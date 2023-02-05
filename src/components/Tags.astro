@@ -1,0 +1,40 @@
+---
+const { tags, standalone } = Astro.props;
+---
+<ul>
+    {tags.map((tag) => (
+        <li>
+            <a class:list={["tag", { standalone }]} href={`/posts/tags/${tag}`}>{tag}</a>
+        </li>
+    ))}
+</ul>
+
+<style>
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        gap: 0.5rem;
+    }
+    .tag.standalone {
+        font-size: 1rem;
+        padding; 1rem;
+    }
+    .tag {
+        all: unset;
+        text-decoration: none;
+        padding: 0.5rem;
+        background-color: hsl(250, 100%, 90%);
+        color: black;
+        transition: all 100ms;
+        cursor: pointer;
+        font-size: 0.5rem;
+    }
+    .tag:hover {
+        background-color: hsl(250, 100%, 80%);
+    }
+    .tag:focus {
+        outline: 3px solid hsl(250, 100%, 50%);
+    }
+</style>

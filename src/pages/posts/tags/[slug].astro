@@ -1,0 +1,66 @@
+---
+import { getCollection } from "astro:content";
+import PostPreview from "../../../components/PostPreview.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+    const entries = await getCollection('posts');
+    entries.sort((a, b) => new Date(b.data.datePosted).getTime() - new Date(a.data.datePosted).getTime());
+    const staticPaths = new Map();
+    for (let entry of entries) {
+        if (entry.data.tags) {
+            let parsedTags = entry.data.tags.split(",");
+            for (let tag of parsedTags) {
+                if (staticPaths.has(tag)) {
+                    staticPaths.get(tag).push(entry);
+                } else {
+                    staticPaths.set(tag, [entry]);
+                }
+            }
+        }
+    }
+    let result = [];
+    for (let [tag, entries] of staticPaths.entries()) {
+        result.push({
+            params: {
+                slug: tag
+            },
+            props: { tag, entries }
+        });
+    }
+    return result;
+}
+
+const { tag, entries } = Astro.props;
+---
+<BaseLayout title="Josh Freedman">
+    <section>
+        <header>
+            <h2>All Posts Tagged "{tag}"</h2>
+        </header>
+        <div class="posts-container">
+            {entries.map((entry) => (
+                <PostPreview 
+                    title={entry.data.title}
+                    tagline={entry.data.tagline}
+                    datePosted={entry.data.datePosted}
+                    slug={entry.slug}
+                    tags={entry.data.tags}
+                />
+            ))}
+        </div>
+    </section>
+</BaseLayout>
+
+<style>
+    section {
+        display: flex;
+        gap: 2rem;
+        flex-direction: column;
+    }
+    .posts-container {
+        display: flex;
+        gap: 1.5rem;
+        flex-direction: column;
+    }
+</style>
