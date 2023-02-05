@@ -6,7 +6,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 let entries = await getCollection('posts');
 entries = entries.sort((a, b) => b.data.datePosted.getTime() - a.data.datePosted.getTime());
 ---
-<BaseLayout title="Josh Freedman">
+<BaseLayout title="Josh Freedman" description="All posts">
     <section>
         <header>
             <h2>All Posts</h2>
