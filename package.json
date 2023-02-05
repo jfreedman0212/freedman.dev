@@ -1,0 +1,17 @@
+{
+  "name": "personal_site",
+  "version": "1.0.0",
+  "description": "My personal website and blog",
+  "repository": {
+    "type": "git",
+    "url": "git@src.freedman.dev:/srv/git/personal_site.git"
+  },
+  "scripts": {
+    "dev": "astro dev"
+  },
+  "author": "Josh Freedman",
+  "license": "CC-BY-4.0",
+  "devDependencies": {
+    "astro": "^2.0.6"
+  }
+}

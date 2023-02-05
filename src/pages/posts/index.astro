@@ -1,0 +1,16 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const entries = await getCollection('posts');
+---
+<BaseLayout title="Posts">
+    {entries.map((entry) => (
+        <section>
+            <article>
+                <header>{entry.data.title}</header>
+                {entry.data.tagline && <p>{entry.data.tagline}</p>}
+            </article>    
+        </section>
+    ))}
+</BaseLayout>
