@@ -57,6 +57,9 @@ const url = Astro.url;
 </html>
 
 <style is:global>
+	* {
+		transition: all 100ms;
+	}
 	html {
 		font-family: sans-serif;
 	}
@@ -77,13 +80,22 @@ const url = Astro.url;
         text-decoration-line: underline;
         text-decoration-style: dashed;
         cursor: pointer;
-		transition: all 100ms;
     }
     a:hover {
         text-decoration-style: solid;
     }
 	a:focus {
 		outline: 3px solid hsl(250, 100%, 50%);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		body {
+			background: hsl(250, 0%, 20%);
+			color: white;
+		}
+		a:focus {
+			outline-color: hsl(250, 50%, 70%);
+		}
 	}
 </style>
 
@@ -96,14 +108,12 @@ const url = Astro.url;
 		all: unset;
 		cursor: pointer;
 		padding: 1rem;
-		transition: all 100ms;
 	}
 	.navlink:hover {
 		background-color: hsl(250, 0%, 80%);
 	}
 	.navlink:focus {
 		outline: 3px solid hsl(250, 100%, 50%);
-		background-color: hsl(250, 0%, 80%);
 	}
 	header {
 		padding: 2rem;
@@ -124,5 +134,25 @@ const url = Astro.url;
 		display: flex;
 		background: hsl(250, 0%, 90%);
         overflow-x: auto;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		header {
+			background-color: hsl(250, 50%, 30%);
+        	color: white;
+		}
+		nav {
+			background: hsl(250, 0%, 20%);
+		}
+		main {
+        	background: hsl(250, 0%, 25%);
+    	}
+		.navlink:hover {
+			background-color: hsl(250, 0%, 30%);
+		}
+		.navlink:focus {
+			outline-color: hsl(250, 50%, 70%);
+			
+		}
 	}
 </style>

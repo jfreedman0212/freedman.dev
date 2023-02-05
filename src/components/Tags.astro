@@ -27,7 +27,6 @@ const { tags, standalone } = Astro.props;
         padding: 0.5rem;
         background-color: hsl(250, 100%, 90%);
         color: black;
-        transition: all 100ms;
         cursor: pointer;
         font-size: 0.5rem;
     }
@@ -36,5 +35,18 @@ const { tags, standalone } = Astro.props;
     }
     .tag:focus {
         outline: 3px solid hsl(250, 100%, 50%);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .tag {
+            background-color: hsl(250, 50%, 50%);
+            color: white;
+        }
+        .tag:hover {
+            background-color: hsl(250, 50%, 60%);
+        }
+        .tag:focus {
+            outline-color: hsl(250, 50%, 70%);
+        }
     }
 </style>
