@@ -6,10 +6,8 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 let entries = await getCollection('posts');
 let tags = [];
 for (let entry of entries) {
-    let innerTags = entry.data.tags;
-    if (innerTags) {
-        innerTags = entry.data.tags.split(",");
-        tags.push(...innerTags);
+    if (entry.data.tags) {
+        tags.push(...entry.data.tags);
     }
 }
 ---

@@ -2,7 +2,6 @@
 const { title } = Astro.props;
 const pathname = Astro.url.pathname;
 ---
-
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -71,10 +70,14 @@ const pathname = Astro.url.pathname;
         text-decoration-line: underline;
         text-decoration-style: dashed;
         cursor: pointer;
+		transition: all 100ms;
     }
     a:hover {
         text-decoration-style: solid;
     }
+	a:focus {
+		outline: 3px solid hsl(250, 100%, 50%);
+	}
 </style>
 
 <style>
@@ -86,8 +89,13 @@ const pathname = Astro.url.pathname;
 		all: unset;
 		cursor: pointer;
 		padding: 1rem;
+		transition: all 100ms;
 	}
 	.navlink:hover {
+		background-color: hsl(250, 0%, 80%);
+	}
+	.navlink:focus {
+		outline: 3px solid hsl(250, 100%, 50%);
 		background-color: hsl(250, 0%, 80%);
 	}
 	header {
@@ -108,6 +116,6 @@ const pathname = Astro.url.pathname;
     nav {
 		display: flex;
 		background: hsl(250, 0%, 90%);
-        overflow: auto;
+        overflow-x: auto;
 	}
 </style>

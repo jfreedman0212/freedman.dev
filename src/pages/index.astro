@@ -5,10 +5,9 @@ import PostPreview from "../components/PostPreview.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 let entries = await getCollection('posts');
-entries = entries.sort((a, b) => new Date(b.data.datePosted).getTime() - new Date(a.data.datePosted).getTime())
+entries = entries.sort((a, b) => b.data.datePosted.getTime() - a.data.datePosted.getTime())
     .slice(0, 3);
 ---
-
 <BaseLayout title="Josh Freedman">
     <section>
         <header>

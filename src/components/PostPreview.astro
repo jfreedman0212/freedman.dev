@@ -3,20 +3,18 @@ import Tags from "./Tags.astro";
 
 const { title, tagline, datePosted, slug, tags } = Astro.props;
 const formatter = new Intl.DateTimeFormat('en-US', {day: '2-digit', month: 'long', year: 'numeric'});
-const parsedDate = new Date(datePosted);
-const parsedTags = tags ? tags.split(",") : [];
 ---
 <article>
     <h3>
         <a href={`/posts/${slug}`}>{title}</a>
     </h3>
     <small>
-        <time datetime={parsedDate.toISOString()} title={parsedDate.toLocaleString()}>
-            {formatter.format(parsedDate)}
+        <time datetime={datePosted.toISOString()} title={datePosted.toLocaleString()}>
+            {formatter.format(datePosted)}
         </time>
     </small>
-    {tagline && <small>{tagline}</small>}
-    {parsedTags ? <Tags tags={parsedTags} /> : null}
+    <small>{tagline}</small>
+    {tags.length > 0 ? <Tags tags={tags} /> : null}
 </article>
 
 <style>

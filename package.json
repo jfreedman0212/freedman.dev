@@ -2,6 +2,7 @@
   "name": "personal_site",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "description": "My personal website and blog",
   "repository": {
     "type": "git",
@@ -9,7 +10,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build"
+    "build": "astro build",
+    "preview": "astro preview"
   },
   "author": "Josh Freedman",
   "license": "CC-BY-4.0",
