@@ -1,16 +1,38 @@
 ---
 import { getCollection } from "astro:content";
+import PostPreview from "../../components/PostPreview.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
-const entries = await getCollection('posts');
+let entries = await getCollection('posts');
+entries = entries.sort((a, b) => new Date(b.data.datePosted).getTime() - new Date(a.data.datePosted).getTime());
 ---
-<BaseLayout title="Posts">
-    {entries.map((entry) => (
-        <section>
-            <article>
-                <header>{entry.data.title}</header>
-                {entry.data.tagline && <p>{entry.data.tagline}</p>}
-            </article>    
-        </section>
-    ))}
+<BaseLayout title="Josh Freedman">
+    <section>
+        <header>
+            <h2>All Posts</h2>
+        </header>
+        <div class="posts-container">
+            {entries.map((entry) => (
+                <PostPreview 
+                    title={entry.data.title}
+                    tagline={entry.data.tagline}
+                    datePosted={entry.data.datePosted}
+                    slug={entry.slug}
+                />
+            ))}
+        </div>
+    </section>
 </BaseLayout>
+
+<style>
+    section {
+        display: flex;
+        gap: 2rem;
+        flex-direction: column;
+    }
+    .posts-container {
+        display: flex;
+        gap: 1.5rem;
+        flex-direction: column;
+    }
+</style>

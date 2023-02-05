@@ -1,0 +1,24 @@
+---
+const { title, tagline, datePosted, slug } = Astro.props;
+const formatter = new Intl.DateTimeFormat('en-US', {day: '2-digit', month: 'long', year: 'numeric'});
+const parsedDate = new Date(datePosted);
+---
+<article>
+    <h3>
+        <a href={`/posts/${slug}`}>{title}</a>
+    </h3>
+    <small>
+        <time datetime={parsedDate.toISOString()} title={parsedDate.toLocaleString()}>
+            {formatter.format(parsedDate)}
+        </time>
+    </small>
+    {tagline && <small>{tagline}</small>}
+</article>
+
+<style>
+    article {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+</style>

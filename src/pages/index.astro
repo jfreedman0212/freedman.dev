@@ -1,8 +1,41 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro"
+import { __astro_tag_component__ } from "astro/dist/runtime/server";
+import { getCollection } from "astro:content";
+import PostPreview from "../components/PostPreview.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 
+let entries = await getCollection('posts');
+entries = entries.sort((a, b) => new Date(b.data.datePosted).getTime() - new Date(a.data.datePosted).getTime())
+    .slice(0, 3);
 ---
 
 <BaseLayout title="Josh Freedman">
-    <h1>Hello, world</h1>
+    <section>
+        <header>
+            <h2>Recent Posts</h2>
+        </header>
+        <div class="posts-container">
+            {entries.map((entry) => (
+                <PostPreview 
+                    title={entry.data.title}
+                    tagline={entry.data.tagline}
+                    datePosted={entry.data.datePosted}
+                    slug={entry.slug}
+                />
+            ))}
+        </div>
+    </section>
 </BaseLayout>
+
+<style>
+    section {
+        display: flex;
+        gap: 2rem;
+        flex-direction: column;
+    }
+    .posts-container {
+        display: flex;
+        gap: 1.5rem;
+        flex-direction: column;
+    }
+</style>

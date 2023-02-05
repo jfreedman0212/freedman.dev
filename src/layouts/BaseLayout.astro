@@ -1,13 +1,112 @@
 ---
 const { title } = Astro.props;
+const pathname = Astro.url.pathname;
 ---
+
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>{title}</title>
-    </head>
-    <body>
-        <slot />
-    </body>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+	</head>
+	<body>
+		<div class="container">
+			<nav>
+				<a class:list={["navlink", { active: pathname === "/" }]} href="/">Home</a>
+				<a class:list={["navlink", { active: pathname === "/about" }]} href="/about">About</a>
+				<a class:list={["navlink", { active: pathname.startsWith("/posts") }]} href="/posts">Posts</a>
+				<a class="navlink" href="https://src.freedman.dev" target="_blank" rel="noreferrer">Code</a>
+				<a
+					class="navlink"
+					href="https://hachyderm.io/@joshfreedman"
+					target="_blank"
+					rel="me"
+				>
+					Mastodon
+				</a>
+			</nav>
+			<header>
+				<h1>Josh Freedman</h1>
+				Software developer, cat haver, wanna-be rock climber and runner.
+			</header>
+			<main>
+				<slot />
+			</main>
+			<footer>
+                <span>
+                    <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                        <img alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/80x15.png" />
+                    </a>
+                </span>
+                <span>
+                    This work is licensed under a
+                    <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                        Creative Commons Attribution 4.0 International License
+                    </a>.
+                </span>
+               
+            </footer>
+		</div>
+	</body>
 </html>
+
+<style is:global>
+	html {
+		font-family: sans-serif;
+	}
+	body {
+		margin: 0;
+        background: hsl(250, 0%, 90%);
+	}
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		margin: 0;
+	}
+    a {
+        all: unset;
+        text-decoration: dashed underline;
+        cursor: pointer;
+    }
+    a:hover {
+        text-decoration: solid underline;
+    }
+</style>
+
+<style>
+	.container {
+		display: flex;
+		flex-direction: column;
+	}
+	.navlink {
+		all: unset;
+		cursor: pointer;
+		padding: 1rem;
+	}
+	.navlink:hover {
+		background-color: hsl(250, 0%, 80%);
+	}
+	header {
+		padding: 2rem;
+		background-color: hsl(250, 100%, 70%);
+        color: white;
+	}
+    main {
+        padding: 2rem;
+        background-color: white;
+    }
+    footer {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem;
+    }
+    nav {
+		display: flex;
+		background: hsl(250, 0%, 90%);
+        overflow: auto;
+	}
+</style>
