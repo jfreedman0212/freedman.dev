@@ -1,5 +1,6 @@
 {
   "name": "personal_site",
+  "private": true,
   "version": "1.0.0",
   "description": "My personal website and blog",
   "repository": {
