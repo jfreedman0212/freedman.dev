@@ -1,4 +1,9 @@
 ---
+interface Props {
+    tags: string[];
+    standalone?: boolean;
+}
+
 const { tags, standalone } = Astro.props;
 ---
 <ul>

@@ -1,6 +1,14 @@
 ---
 import Tags from "./Tags.astro";
 
+interface Props {
+    title: string;
+    tagline: string;
+    datePosted: Date;
+    slug: string;
+    tags: string[];
+}
+
 const { title, tagline, datePosted, slug, tags } = Astro.props;
 const publicFormatter = new Intl.DateTimeFormat('en-US', {
     day: '2-digit',

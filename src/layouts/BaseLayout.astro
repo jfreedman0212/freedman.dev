@@ -1,4 +1,9 @@
 ---
+interface Props {
+	title: string;
+	description?: string;
+}
+
 const { title, description } = Astro.props;
 const pathname = Astro.url.pathname;
 const url = Astro.url;
@@ -8,10 +13,10 @@ const url = Astro.url;
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="author" content="Josh Freedman" />
-		<meta name="description" content={description} />
+		{description && <meta name="description" content={description} />}
 		<meta name="og:site_name" content="Josh Freedman's Blog" />
 		<meta name="og:title" content={title} />
-		<meta name="og:description" content={description} />
+		{description && <meta name="og:description" content={description} />}
 		<meta name="og:url" content={url} />
 		<title>{title}</title>
 	</head>

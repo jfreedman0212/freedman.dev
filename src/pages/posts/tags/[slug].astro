@@ -1,5 +1,5 @@
 ---
-import { getCollection } from "astro:content";
+import { CollectionEntry, getCollection } from "astro:content";
 import PostPreview from "../../../components/PostPreview.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 
@@ -28,6 +28,11 @@ export async function getStaticPaths() {
         });
     }
     return result;
+}
+
+interface Props {
+    tag: string,
+    entries: CollectionEntry<'posts'>[];
 }
 
 const { tag, entries } = Astro.props;
