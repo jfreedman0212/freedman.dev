@@ -28,7 +28,7 @@ I built this site with:
 
 * [Astro](https://astro.build): to generate the static files for this website
 * [Linode](https://www.linode.com/): to host all the programs and files
-* [Apache Web Server/httpd](httpd.apache.org/): to route requests to the right site and manage other web config (like TLS)
+* [Apache Web Server/httpd](https://httpd.apache.org): to route requests to the right site and manage other web config (like TLS)
 * [cgit](https://git.zx2c4.com/cgit/about/): to generate web pages for my Git repositories (also hosted on my Linode instance)
 
 I did it this way because I wanted to carve out my own little corner of the Internet that I "own". Yes, I rent a VPS so they
