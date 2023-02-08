@@ -16,6 +16,7 @@
   "author": "Josh Freedman",
   "license": "CC-BY-4.0",
   "devDependencies": {
+    "@astrojs/rss": "^2.1.0",
     "astro": "^2.0.6"
   }
 }
