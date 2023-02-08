@@ -1,4 +1,5 @@
 ---
+import DateView from "./DateView.astro";
 import Tags from "./Tags.astro";
 
 interface Props {
@@ -10,24 +11,13 @@ interface Props {
 }
 
 const { title, tagline, datePosted, slug, tags } = Astro.props;
-const publicFormatter = new Intl.DateTimeFormat('en-US', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-});
-const titleFormatter = new Intl.DateTimeFormat('en-US', {
-    dateStyle: "long",
-    timeStyle: "long"
-});
 ---
 <article>
     <h3>
         <a href={`/posts/${slug}`}>{title}</a>
     </h3>
     <small>
-        <time datetime={datePosted.toISOString()} title={titleFormatter.format(datePosted)}>
-            {publicFormatter.format(datePosted)}
-        </time>
+        Posted on <DateView date={datePosted} />
     </small>
     <small>{tagline}</small>
     {tags.length > 0 ? <Tags tags={tags} /> : null}

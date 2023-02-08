@@ -23,9 +23,9 @@ const url = Astro.url;
 	<body>
 		<div class="container">
 			<nav>
-				<a class:list={["navlink", { active: pathname === "/" }]} href="/">Home</a>
-				<a class:list={["navlink", { active: pathname === "/about" }]} href="/about">About</a>
-				<a class:list={["navlink", { active: pathname.startsWith("/posts") }]} href="/posts">Posts</a>
+				<a class="navlink" aria-current={pathname === "/" ? "page" : undefined} href="/">Home</a>
+				<a class="navlink" aria-current={pathname === "/about" ? "page" : undefined} href="/about">About</a>
+				<a class="navlink" aria-current={pathname.startsWith("/posts") ? "page" : undefined} href="/posts">Posts</a>
 				<a class="navlink" href="https://src.freedman.dev" target="_blank" rel="noreferrer">Code</a>
 				<a
 					class="navlink"
@@ -35,6 +35,7 @@ const url = Astro.url;
 				>
 					Mastodon
 				</a>
+				<a class="navlink" target="_blank" href="/rss.xml">RSS</a>
 			</nav>
 			<header>
 				<h1>Josh Freedman</h1>
@@ -52,7 +53,7 @@ const url = Astro.url;
                 <span>
                     This work is licensed under a
                     <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
-                        Creative Commons Attribution 4.0 International License
+                        CC BY 4.0 license
                     </a>.
                 </span>
                
@@ -119,6 +120,9 @@ const url = Astro.url;
 	}
 	.navlink:focus {
 		outline: 3px solid hsl(250, 100%, 50%);
+	}
+	.navlink[aria-current] {
+		text-decoration: underline;
 	}
 	header {
 		padding: 2rem;

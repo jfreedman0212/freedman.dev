@@ -8,5 +8,12 @@ export const collections = {
             datePosted: z.date(),
             tags: z.array(z.string())
         })
+    }),
+    pages: defineCollection({
+        schema: z.object({
+            title: z.string(),
+            description: z.string(),
+            lastUpdated: z.date()
+        })
     })
 }

@@ -1,0 +1,29 @@
+---
+import { CollectionEntry, getCollection } from 'astro:content';
+import DateView from '../components/DateView.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+    const entries = await getCollection('pages');
+    return entries.map((entry) => ({
+        params: {
+            slug: entry.slug
+        },
+        props: { entry }
+    }));
+}
+
+interface Props {
+    entry: CollectionEntry<'pages'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+<BaseLayout title={`${entry.data.title} - Josh Freedman`} description={entry.data.description}>
+    <h1>{entry.data.title}</h1>
+    <small>
+        Last updated on <DateView date={entry.data.lastUpdated} />
+    </small>
+    <Content />
+</BaseLayout>
