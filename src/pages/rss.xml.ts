@@ -1,5 +1,9 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
+import sanitizeHtml from 'sanitize-html';
+import MarkdownIt from 'markdown-it';
+
+const mdParser = new MarkdownIt();
 
 export async function get(context: { site?: string }) {
     if (!context.site) {
@@ -9,14 +13,19 @@ export async function get(context: { site?: string }) {
         .sort((a, b) => b.data.datePosted.getTime() - a.data.datePosted.getTime());
     return rss({
         title: "Josh Freedman's Blog",
-        description: "All my blog posts, usually ramblings about whatever I feel like rambling, mostly software",
+        description: "Usually ramblings about whatever I feel like rambling, mostly software",
         site: context.site,
+        xmlns: {
+            atom: 'http://www.w3.org/2005/Atom'
+        },
+        stylesheet: '/rss/stylesheet.xsl',
         items: posts.map((post) => ({
             title: post.data.title,
             pubDate: post.data.datePosted,
             description: post.data.tagline,
-            link: `/posts/${post.slug}`
+            link: `/posts/${post.slug}`,
+            content: sanitizeHtml(mdParser.render(post.body))
         })),
-        customData: '<language>en-us</language>'
+        customData: `<language>en-us</language><atom:link href="${context.site}" rel="self" type="application/rss+xml" />`
     });
 }

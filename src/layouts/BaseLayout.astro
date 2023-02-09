@@ -24,7 +24,7 @@ const url = Astro.url;
 		<div class="container">
 			<nav>
 				<a class="navlink" aria-current={pathname === "/" ? "page" : undefined} href="/">Home</a>
-				<a class="navlink" aria-current={pathname === "/about" ? "page" : undefined} href="/about">About</a>
+				<a class="navlink" aria-current={pathname === "/about" || pathname === "/about/" ? "page" : undefined} href="/about">About</a>
 				<a class="navlink" aria-current={pathname.startsWith("/posts") ? "page" : undefined} href="/posts">Posts</a>
 				<a class="navlink" href="https://src.freedman.dev" target="_blank" rel="noreferrer">Code</a>
 				<a
@@ -63,8 +63,8 @@ const url = Astro.url;
 </html>
 
 <style is:global>
-	* {
-		transition: all 100ms;
+	:root {
+		--default-transition: all 100ms;
 	}
 	html {
 		font-family: sans-serif;
@@ -72,6 +72,7 @@ const url = Astro.url;
 	body {
 		margin: 0;
         background: hsl(250, 0%, 90%);
+		transition: var(--default-transition);
 	}
 	h1,
 	h2,
@@ -86,6 +87,7 @@ const url = Astro.url;
         text-decoration-line: underline;
         text-decoration-style: dashed;
         cursor: pointer;
+		transition: var(--default-transition);
     }
     a:hover {
         text-decoration-style: solid;
@@ -114,6 +116,7 @@ const url = Astro.url;
 		all: unset;
 		cursor: pointer;
 		padding: 1rem;
+		transition: var(--default-transition);
 	}
 	.navlink:hover {
 		background-color: hsl(250, 0%, 80%);
@@ -128,10 +131,12 @@ const url = Astro.url;
 		padding: 2rem;
 		background-color: hsl(250, 100%, 70%);
         color: white;
+		transition: var(--default-transition);
 	}
     main {
         padding: 2rem;
         background-color: white;
+		transition: var(--default-transition);
     }
     footer {
         text-align: center;
@@ -143,6 +148,7 @@ const url = Astro.url;
 		display: flex;
 		background: hsl(250, 0%, 90%);
         overflow-x: auto;
+		transition: var(--default-transition);
 	}
 
 	@media (prefers-color-scheme: dark) {
