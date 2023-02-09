@@ -26,6 +26,6 @@ export async function get(context: { site?: string }) {
             link: `/posts/${post.slug}`,
             content: sanitizeHtml(mdParser.render(post.body))
         })),
-        customData: `<language>en-us</language><atom:link href="${context.site}" rel="self" type="application/rss+xml" />`
+        customData: `<language>en-us</language><atom:link href="${context.site}/rss.xml" rel="self" type="application/rss+xml" />`
     });
 }
