@@ -136,7 +136,7 @@ Then, edit `/etc/passwd` and change the git user's shell to the output of `which
 This isn't required (and I may remove this from my setup at some point), but I chroot'd the `git` user
 so it only has access to the Git repositories. Other users can reach in, but `git` can't reach out. I
 won't go into detail, but here's some
-[more information](https://www.redhat.com/sysadmin/set-linux-chroot-jails) if you're interested.
+[more information](https://www.howtogeek.com/441534/how-to-use-the-chroot-command-on-linux/) if you're interested.
 While using `git-shell` prevents users from doing anything interactively, I wanted to prevent someone from
 getting access to other parts of the file system via a `git clone` command. This could probably be
 accomplished through stricter permissions.
@@ -154,6 +154,56 @@ And that's it! You can clone it like:
 ```shell
 git clone git@[host]:/srv/git/my-repo.git
 ```
+
+# cgit
+
+[cgit](https://git.zx2c4.com/cgit/about/) is a web UI for Git repositories written in C. There's nothing fancy about it:
+it's just a way to make navigating repos a little bit nicer. Yes, GitHub does that, and there are other tools that are
+more conducive for collaboration and can be self-hosted (Gitea, Gogs, and GitLab to name a few), but I wanted something that:
+
+- served read-only web pages
+- served little to no JavaScript
+- didn't look horribly ugly
+
+There _are_ some tweaks I'd like to make to my cgit instance to make it nicer looking, but that's besides the point.
+Let's set it up!
+
+## Installation
+
+```shell
+sudo apt install cgit
+```
+
+This creates a couple directories and files:
+
+- `/etc/cgitrc`: the configuration file that cgit reads on every request
+- `/usr/share/webapps/cgit`: static files and content to be used by cgit
+- `/usr/lib/cgit`: contains the CGI executable (`cgit.cgi`) and some pre-built extensions
+
+However, we're going to move these to an easier location to manage:
+
+```shell
+sudo mkdir -p /var/www/src.freedman.dev
+sudo ln -s /usr/lib/cgit/cgit.cgi /var/www/src.freedman.dev/cgit.cgi
+sudo mv /usr/share/webapps/cgit/* /var/www/src.freedman.dev
+sudo chown -R www-data:www-data /var/www/src.freedman.dev
+```
+
+## Configuration
+
+TODO: pull configuration from existing file, look at git template, and check out files in the `/var/git-jail/srv/git`
+outside of the repositories themselves.
+
+# Personal Website
+
+These are just static files in the `/var/www/freedman.dev` folder. To set this up:
+
+```shell
+sudo mkdir -p /var/www/freedman.dev
+sudo chown -R www-data:www-data /var/www/freedman.dev
+```
+
+Then, copy the files to serve into this folder.
 
 # Apache Web Server Setup
 
@@ -251,7 +301,11 @@ Before going any further, let's break down a couple things here:
 
 1. No content is being served via HTTPS yet since we're only listening on port 80 (regular, unencrypted HTTP). We'll run certbot on these configurations and it will generate HTTPS configs from these ones.
 2. The cgit configuration is pulled straight from [Andrew Marchetta's great blog post](https://www.andrewmarchetta.com/computing/setting-up-cgit-on-apache/). Highly recommend checking it out!
-3. Some of the directories haven't been made and cgit hasn't been installed yet. We'll get there!
+
+### Enable the Sites and Modules
+
+TODO: enable CGI module, and move all the website configs into `/etc/apache2/sites-enabled`. Maybe try `a2enmod` and
+`a2ensite` (I think those are the right commands?).
 
 ### HTTPS via Certbot
 
@@ -272,9 +326,20 @@ sudo certbot --apache
 Cerbot should automatically pick up all the domains/subdomains in your Apache config and be able to make the
 modifications necessary.
 
+# Next Steps
+
+While this should result in a working web server, there are a couple enhancements to make:
+
+1. Instead of relying on manual configuration of the `git` user, use something like
+[Gitolite](https://gitolite.com/gitolite/index.html).
+2. Set up continuous integration, either stitched together using `post-receive` hooks that trigger the
+[at](https://linuxize.com/post/at-command-in-linux/) command, or through a real CI system.
+3. Make cgit's UI look nicer, namely around mobile-friendly UI and dark mode (the latter of which appears to be included
+in the latest commits of cgit).
+
 # Thanks
 
-I'd like to thank my friend Justin and my girlfriend Amaya for listening to me rant about the various
+I'd like to thank my friend Justin ~~and my girlfriend Amaya~~[^6] for listening to me rant about the various
 issues I ran into. And if you made it all the way down here, thanks to you for reading!
 
 [^1]: This was already the appropriate default, so this may not be necessary.
@@ -282,4 +347,5 @@ issues I ran into. And if you made it all the way down here, thanks to you for r
 [^3]: Might be a good idea to allow SSH over IPv6 too. I don't remember why I explicitly set this option.
 [^4]: Google Domains shows the whole domain, but Linode only showed the subdomain part. So, the first two records would be blank, but then the last 2 would just contain "src".
 [^5]: The "apache2" verbiage is Debian-specific. Some distros refer to it as "httpd". It's the same software with the same configuration, just different names.
+[^6]: "I didn't even listen, you just talked at me for 20 minutes straight without letting me get a word in" -Amaya
 

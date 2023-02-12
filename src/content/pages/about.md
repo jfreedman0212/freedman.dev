@@ -13,7 +13,8 @@ hanging out with friends and family.
 
 # Work
 
-At work, I mostly do full-stack web development (largely with React in TypeScript and Java). I could say I do it because:
+At work, I mostly do full-stack web development (largely with React in TypeScript and Java). I _could_ say I enjoy being
+a generalist because:
 
 * It's easier for me to help out my team or to fix bugs if I know how everything fits together
 * It makes me more valuable since I can see a feature to completion independently
