@@ -6,14 +6,59 @@ interface Props {
 	title: string;
 	tagline: string;
     datePosted: Date;
+    headings: { depth: number, slug: string, text: string }[];
 }
 
-const { title, tagline, datePosted } = Astro.props;
+const { title, tagline, datePosted, headings } = Astro.props;
+const topLevelHeadings = headings.filter((h) => h.depth === 1);
 ---
 <BaseLayout title={`${title} - Josh Freedman`} description={tagline}>
-    <h1>{title}</h1>
-    <small>
-        Posted on <DateView date={datePosted} />
-    </small>
-    <slot />
+    <article>
+        <header>
+            <h1>{title}</h1>
+            <small>
+                Posted on <DateView date={datePosted} />
+            </small>
+            {topLevelHeadings.length > 0 ? (
+                <details>
+                    <summary>Table of Contents</summary>
+                    <ol>
+                        {topLevelHeadings.map((h) => (
+                            <li>
+                                <a href={`#${h.slug}`}>{h.text}</a>
+                            </li>
+                        ))}
+                    </ol>
+                </details>
+            ) : null}
+        </header>
+        <slot />
+    </article>
+
 </BaseLayout>
+
+<style>
+    ol {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    details {
+        margin-top: 0.5rem;
+    }
+    summary {
+        width: max-content;
+        cursor: pointer;
+		transition: var(--default-transition);
+    }
+	summary:focus {
+		outline: 3px solid hsl(250, 100%, 50%);
+	}
+	@media (prefers-color-scheme: dark) {
+		summary:focus {
+			outline-color: hsl(250, 50%, 70%);
+		}
+	}
+
+</style>
+

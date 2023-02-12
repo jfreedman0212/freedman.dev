@@ -65,6 +65,7 @@ const url = Astro.url;
 <style is:global>
 	:root {
 		--default-transition: all 100ms;
+        scroll-behavior: smooth;
 	}
 	html {
 		font-family: sans-serif;
@@ -85,7 +86,7 @@ const url = Astro.url;
     a {
         all: unset;
         text-decoration-line: underline;
-        text-decoration-style: dashed;
+        text-decoration-style: dotted;
         cursor: pointer;
 		transition: var(--default-transition);
     }
@@ -111,6 +112,8 @@ const url = Astro.url;
 	.container {
 		display: flex;
 		flex-direction: column;
+        margin: 0 auto;
+        max-width: 1200px;
 	}
 	.navlink {
 		all: unset;

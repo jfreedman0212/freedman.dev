@@ -7,11 +7,10 @@ tags: ["apache","linode","cgit","linux"]
 This is less of a blog post and more of a compilation of my notes for setting up my web server.
 Feel free to follow along or try this yourself, but I won't go into too much detail unless it
 will help me remember later. Additionally, this guide assumes you're running on Debian 11, so
-adjust any of the commands (mainly package manager ones) accordingly. 
+adjust any of the commands (mainly package manager ones) accordingly. Before we get started, we
+need to: 
 
-# Preliminary Steps
-
-1. Buy a domain (duh)
+1. Buy a domain
 2. Rent a VPS somewhere (I run this on [Linode](https://www.linode.com/) for $5 per month)
 
 # Set up Secure Defaults

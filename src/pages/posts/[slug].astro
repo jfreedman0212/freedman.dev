@@ -17,8 +17,8 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { Content, headings } = await entry.render();
 ---
-<PostLayout title={entry.data.title} tagline={entry.data.tagline} datePosted={entry.data.datePosted}>
+<PostLayout title={entry.data.title} tagline={entry.data.tagline} datePosted={entry.data.datePosted} headings={headings}>
     <Content />
 </PostLayout>
