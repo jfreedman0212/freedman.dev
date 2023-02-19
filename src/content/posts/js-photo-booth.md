@@ -3,6 +3,7 @@ title: "Adding a Photo Booth in JavaScript"
 tagline: "A brief tutorial on building a feature that lets you take photos using a webcam from the browser."
 datePosted: 2023-02-19T20:05:44.038Z
 tags: ["javascript"]
+draft: true
 ---
 [Live Demo](/examples/js-photo-booth)
 
