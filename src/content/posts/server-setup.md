@@ -1,7 +1,7 @@
 ---
 title: "How I Set Up My Server"
 tagline: "If I don't write about this now, I will forget everything in 6 months."
-datePosted: 2023-02-05T05:12:02.634Z
+datePosted: 2023-02-13T04:09:36.630Z 
 tags: ["apache","linode","cgit","linux"]
 ---
 This is less of a blog post and more of a compilation of my notes for setting up my web server.
@@ -13,7 +13,7 @@ need to:
 1. Buy a domain
 2. Rent a VPS somewhere (I run this on [Linode](https://www.linode.com/) for $5 per month)
 
-# Set up Secure Defaults
+# Secure Server with Sane Defaults
 
 Before we can start serving content, we need to set up sane user permissions. We don't want anyone
 to log in as `root` (including us) via SSH, so we need to make our own account first. All of these
@@ -88,7 +88,7 @@ open up some more ports, but we'll do that later.
 
 TODO: write about fail2ban
 
-# Git Setup
+# Enable Git Access via SSH
 
 My server also houses my Git repositories, which has push/pull access via SSH.
 Roughly, this advice follows the Git book's advice for [Git Servers](https://git-scm.com/book/en/v2/Git-on-the-Server-Setting-Up-the-Server). We'll create a user to do all Git operations, then create a folder for
@@ -154,7 +154,7 @@ And that's it! You can clone it like:
 git clone git@[host]:/srv/git/my-repo.git
 ```
 
-# cgit
+# Install cgit
 
 [cgit](https://git.zx2c4.com/cgit/about/) is a web UI for Git repositories written in C. There's nothing fancy about it:
 it's just a way to make navigating repos a little bit nicer. Yes, GitHub does that, and there are other tools that are
@@ -171,6 +171,8 @@ Let's set it up!
 
 ```shell
 sudo apt install cgit
+# Used for syntax highlighting
+sudo apt install highlight
 ```
 
 This creates a couple directories and files:
@@ -188,12 +190,99 @@ sudo mv /usr/share/webapps/cgit/* /var/www/src.freedman.dev
 sudo chown -R www-data:www-data /var/www/src.freedman.dev
 ```
 
-## Configuration
+## Global Configuration
 
-TODO: pull configuration from existing file, look at git template, and check out files in the `/var/git-jail/srv/git`
-outside of the repositories themselves.
+First, let's modify `/etc/cgitrc` (for more info on each config option, the [man page on the Arch Linux wiki](https://man.archlinux.org/man/cgitrc.5) is pretty good):
 
-# Personal Website
+```
+# Stylistic options
+css=/cgit.css
+logo=/cgit.png
+virtual-root=/
+root-title=Josh Freedman's Git Repositories
+root-desc=My personal projects, probably unfinished or half-baked
+root-readme=/srv/git/README.html
+head-include=/srv/git/head-include.html
+
+# Global Repository options
+readme=trunk:README.html
+readme=main:README.html
+readme=master:README.html
+readme=trunk:readme.html
+readme=main:readme.html
+readme=master:readme.html
+enable-index-owner=1
+source-filter=/usr/lib/cgit/filters/syntax-highlighting.sh
+scan-path=/srv/git
+```
+
+Create `/srv/git/head-include.html` and put this content into it:
+
+```html
+<meta name="og:site_name" content="Josh Freedman's Git Repositories" />
+<meta name="og:image" content="https://src.freedman.dev/favicon.ico" />
+```
+
+Create a `/srv/git/README.html` file and put whatever in it, it will get displayed on the "About" page
+from the home page.
+
+## Repository-Specific Configuration
+
+We've configured cgit globally, but repositories need a cgitrc specific to them to store any repo-specific
+data. We could manually add a `cgitrc` to the repository on the server, or we can add it to the template
+that Git uses to create the repository. Then, we'll create a little script that makes this process easier.
+
+First, create a file at `/usr/share/git-core/templates/cgitrc`:
+
+```
+url=$REPO_FILE_NAME
+name=$REPO_NAME
+desc=$REPO_DESC
+extra-head-content=<meta name="og:title" content="$REPO_NAME" /><meta name="og:description" content="$REPO_DESC" /><meta name="og:url" content="https://src.freedman.dev/$REPO_FILE_NAME" />
+owner=Josh Freedman
+image=/favicon.ico
+```
+
+Note that there's environment-variable syntax in there. This is because we'll expand them to the
+repo-specific values in our script:
+
+```shell
+#!/bin/bash
+
+# RUN THIS AS ROOT!
+# Helpful command: sudo -u root [path to this script]
+
+REPOS_ROOT=/srv/git
+
+# Read in values from stdin
+read -p "File Name (.git will be added automatically): " REPO_FILE_NAME
+REPO_FILE_NAME=$REPO_FILE_NAME.git
+read -p "Name: " REPO_NAME
+read -p "Description: " REPO_DESC
+
+FULL_REPO_PATH="$REPOS_ROOT/$REPO_FILE_NAME"
+
+# make them available to envsubst
+export REPO_FILE_NAME
+export REPO_NAME
+export REPO_DESC
+
+# Create the repository from the template
+mkdir $FULL_REPO_PATH
+cd $FULL_REPO_PATH 
+git init --bare
+
+# Expand environment variables in the default cgitrc
+cat "$FULL_REPO_PATH/cgitrc" | envsubst > "$FULL_REPO_PATH/cgitrc_expanded"
+rm "$FULL_REPO_PATH/cgitrc"
+mv "$FULL_REPO_PATH/cgitrc_expanded" "$FULL_REPO_PATH/cgitrc"
+
+# Set permissions appropriately
+chown -R git:git "$FULL_REPO_PATH"
+chmod g+rx -R "$FULL_REPO_PATH"
+```
+
+# Set Up Personal Website
 
 These are just static files in the `/var/www/freedman.dev` folder. To set this up:
 
@@ -204,7 +293,7 @@ sudo chown -R www-data:www-data /var/www/freedman.dev
 
 Then, copy the files to serve into this folder.
 
-# Apache Web Server Setup
+# Set Up Web Server
 
 Finally, the main event: the web server. This will route all requests made by a browser to the appropriate
 place. For my server, I want two sites:
@@ -303,8 +392,17 @@ Before going any further, let's break down a couple things here:
 
 ### Enable the Sites and Modules
 
-TODO: enable CGI module, and move all the website configs into `/etc/apache2/sites-enabled`. Maybe try `a2enmod` and
-`a2ensite` (I think those are the right commands?).
+```shell
+# add the www-data user to the git group so it can
+# read/execute the /srv/git folder
+sudo usermod -a -G git www-data
+# enable CGI module for cgit
+sudo a2enmod cgi.load
+# enable our website configurations
+sudo a2ensite 001-mysites.conf
+sudo a2ensite 002-src.conf
+# alternatively, manually symlink the sites from /etc/apache2/[xyz]-available to [xyz]-enabled
+```
 
 ### HTTPS via Certbot
 
@@ -320,14 +418,16 @@ sudo snap refresh core
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
 sudo certbot --apache
+# if all is successful, restart apache for the changes to take effect
+sudo systemctl restart apache2
 ```
 
 Cerbot should automatically pick up all the domains/subdomains in your Apache config and be able to make the
 modifications necessary.
 
-# Next Steps
+# Optional Next Steps
 
-While this should result in a working web server, there are a couple enhancements to make:
+While this should result in a working web server, there are some potential areas of improvement:
 
 1. Instead of relying on manual configuration of the `git` user, use something like
 [Gitolite](https://gitolite.com/gitolite/index.html).
@@ -335,6 +435,7 @@ While this should result in a working web server, there are a couple enhancement
 [at](https://linuxize.com/post/at-command-in-linux/) command, or through a real CI system.
 3. Make cgit's UI look nicer, namely around mobile-friendly UI and dark mode (the latter of which appears to be included
 in the latest commits of cgit).
+4. Look into managing environments with [Nix](https://nixos.org/). Maybe even run the server with NixOS and have all configuration stored as a file?
 
 # Thanks
 
