@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Photo Booth Example</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            /* The CSS is here to make this not horribly ugly. It's still pretty ugly though */
+            body {
+                font-family: sans-serif;
+            }
+            h1 {
+                margin: 0;
+                text-align: center;
+            }
+            #container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            #buttonContainer {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: center;
+            }
+            #photosContainer {
+                display: flex;
+                gap: 0.5rem;
+                overflow-x: auto;
+                width: 100%;
+            }
+            #photoContainer > img {
+                width: 640px;
+                height: 480px;
+            }
+        </style>
+    </head>
+    <body>
+        <main id="container">
+            <h1>Photo Booth Example</h1>
+            <div id="buttonContainer">
+                <button id="enableCamera" type="button">Enable Camera</button>
+                <button id="takePhoto" type="button" disabled="disabled">Take Photo</button>
+            </div>
+            <div id="videoContainer"></div>
+            <div id="photosContainer"></div>
+        </main>
+        <script>
+            // we'll use 640x480 for the dimensions here, but feel free to change them if needed
+            const WIDTH = 640;
+            const HEIGHT = 480;
+
+            // this function returns a Promise<Blob>
+            function takePhotoFromMediaStream(stream, videoElement) {
+                // if ImageCapture is a global (i.e. defined in the window object), then use it
+                // to take the photo
+                if ("ImageCapture" in window) {
+                    let imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
+                    // return the Promise object, but don't await it here!
+                    return imageCapture.takePhoto();
+                }
+                // otherwise, use the videoElement's current frame, render it to a canvas tag, and take
+                // a photo of _that_
+                return new Promise((resolve, reject) => {
+                    try {
+                        // create the canvas and get the rendering context
+                        let canvas = document.createElement("canvas");
+                        canvas.width = WIDTH;
+                        canvas.height = HEIGHT;
+                        let ctx = canvas.getContext("2d");
+                        // draw the image and convert it to an image, calling the Promise's resolve
+                        // function once the image is ready to download
+                        ctx.drawImage(videoElement, 0, 0, WIDTH, HEIGHT);
+                        canvas.toBlob(resolve, 'image/png'); // the first argument is a callback, weirdly enough
+                    } catch (e) {
+                        reject(e);
+                    }
+                });
+            }
+
+            let enableCameraButton = document.querySelector("#enableCamera");
+            let takePhotoButton = document.querySelector("#takePhoto");
+
+            enableCameraButton.addEventListener("click", async () => {
+                let videoContainer = document.querySelector("#videoContainer");
+                try {
+                    // first, attempt to get the user's video feed from the browser.
+                    // this can fail, so we wrap it in a try-catch. the failure modes will
+                    // typically be:
+                    //      1. the user doesn't have a camera
+                    //      2. the user denies permission to a camera
+                    // the user can also take no action, so this `await` will just wait indefinitely
+                    let stream = await navigator.mediaDevices.getUserMedia({ 
+                        // if you don't care about the size, `video` can just be a boolean.
+                        // or, you can set minimum, ideal, and maximum values for each.
+                        video: { width: WIDTH, height: HEIGHT }
+                    });
+                    // disable the button so only one video tag will be added (you probably don't want this on
+                    // a real site, but it's easier this way)
+                    enableCameraButton.disabled = true;
+                    // create a video element to display the camera on the page
+                    let video = document.createElement("video");
+                    video.autoplay = true;
+                    video.srcObject = stream;
+                    video.width = WIDTH;
+                    video.height = HEIGHT;
+                    videoContainer.appendChild(video);
+                    // enable the Take a Photo button and add the event handler
+                    takePhotoButton.disabled = false;
+                    takePhotoButton.addEventListener("click", async () => {
+                        // step 1: take the photo
+                        let blob = await takePhotoFromMediaStream(stream, video);
+                        let url = URL.createObjectURL(blob);
+
+                        // step 2: append it to the document
+                        let photosContainer = document.querySelector("#photosContainer");
+                        let img = document.createElement("img");
+                        img.src = url;
+                        photosContainer.appendChild(img);
+                    });
+                } catch (e) {
+                    // if requesting their camera fails for any reason, display the error message to them
+                    videoContainer.textContent = `${e.name} - ${e.message}`;
+                }
+            });
+        </script>
+    </body>
+</html>
