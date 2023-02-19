@@ -1,40 +1,42 @@
 ---
-import { getCollection } from "astro:content";
 import PostPreview from "../../components/PostPreview.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPosts } from "../../utils/getPosts";
 
-let entries = await getCollection('posts');
-entries = entries.sort((a, b) => b.data.datePosted.getTime() - a.data.datePosted.getTime());
+const entries = await getPosts();
 ---
+
 <BaseLayout title="Josh Freedman" description="All posts">
-    <section>
-        <header>
-            <h2>All Posts</h2>
-            <a href="/posts/tags">See all tags</a>
-        </header>
-        <div class="posts-container">
-            {entries.map((entry) => (
-                <PostPreview 
-                    title={entry.data.title}
-                    tagline={entry.data.tagline}
-                    datePosted={entry.data.datePosted}
-                    slug={entry.slug}
-                    tags={entry.data.tags}
-                />
-            ))}
-        </div>
-    </section>
+	<section>
+		<header>
+			<h2>All Posts</h2>
+			<a href="/posts/tags">See all tags</a>
+		</header>
+		<div class="posts-container">
+			{
+				entries.map((entry) => (
+					<PostPreview
+						title={entry.data.title}
+						tagline={entry.data.tagline}
+						datePosted={entry.data.datePosted}
+						slug={entry.slug}
+						tags={entry.data.tags}
+					/>
+				))
+			}
+		</div>
+	</section>
 </BaseLayout>
 
 <style>
-    section {
-        display: flex;
-        gap: 2rem;
-        flex-direction: column;
-    }
-    .posts-container {
-        display: flex;
-        gap: 1.5rem;
-        flex-direction: column;
-    }
+	section {
+		display: flex;
+		gap: 2rem;
+		flex-direction: column;
+	}
+	.posts-container {
+		display: flex;
+		gap: 1.5rem;
+		flex-direction: column;
+	}
 </style>

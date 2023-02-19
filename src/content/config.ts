@@ -7,7 +7,8 @@ export const collections = {
             tagline: z.string(),
             datePosted: z.date(),
             dateLastUpdated: z.date().optional(),
-            tags: z.array(z.string())
+            tags: z.array(z.string()),
+            draft: z.boolean().optional()
         })
     }),
     pages: defineCollection({

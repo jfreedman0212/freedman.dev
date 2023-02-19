@@ -1,7 +1,7 @@
 import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
 import sanitizeHtml from 'sanitize-html';
 import MarkdownIt from 'markdown-it';
+import { getPosts } from '../utils/getPosts';
 
 const mdParser = new MarkdownIt();
 
@@ -9,8 +9,7 @@ export async function get(context: { site?: string }) {
     if (!context.site) {
         throw new Error('A `site` property in `astro.config` must be configured!');
     }
-    const posts = (await getCollection('posts'))
-        .sort((a, b) => b.data.datePosted.getTime() - a.data.datePosted.getTime());
+    const posts = await getPosts();
     return rss({
         title: "Josh Freedman's Blog",
         description: "Usually ramblings about whatever I feel like rambling, mostly software",

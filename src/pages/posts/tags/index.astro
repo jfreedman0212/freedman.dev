@@ -1,29 +1,30 @@
 ---
-import { getCollection } from "astro:content";
 import Tags from "../../../components/Tags.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getPosts } from "../../../utils/getPosts";
 
-let entries = await getCollection('posts');
+let entries = await getPosts();
 let tags = [];
 for (let entry of entries) {
-    if (entry.data.tags) {
-        tags.push(...entry.data.tags);
-    }
+	if (entry.data.tags) {
+		tags.push(...entry.data.tags);
+	}
 }
 ---
+
 <BaseLayout title="Josh Freedman">
-    <section>
-        <header>
-            <h2>All Tags</h2>
-        </header>
-        <Tags tags={tags} standalone={true} />
-    </section>
+	<section>
+		<header>
+			<h2>All Tags</h2>
+		</header>
+		<Tags tags={tags} standalone={true} />
+	</section>
 </BaseLayout>
 
 <style>
-    section {
-        display: flex;
-        gap: 2rem;
-        flex-direction: column;
-    }
+	section {
+		display: flex;
+		gap: 2rem;
+		flex-direction: column;
+	}
 </style>
