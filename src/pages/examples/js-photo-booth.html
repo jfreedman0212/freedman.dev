@@ -99,25 +99,37 @@
                     // a real site, but it's easier this way)
                     enableCameraButton.disabled = true;
                     // create a video element to display the camera on the page
+                    let canvas = document.createElement("canvas");
+                    canvas.width = WIDTH;
+                    canvas.height = HEIGHT;
+                    videoContainer.appendChild(canvas);
+                    let ctx = canvas.getContext("2d");
                     let video = document.createElement("video");
-                    video.autoplay = true;
                     video.srcObject = stream;
+                    video.autoplay = true;
                     video.width = WIDTH;
                     video.height = HEIGHT;
-                    videoContainer.appendChild(video);
-                    // enable the Take a Photo button and add the event handler
-                    takePhotoButton.disabled = false;
-                    takePhotoButton.addEventListener("click", async () => {
-                        // step 1: take the photo
-                        let blob = await takePhotoFromMediaStream(stream, video);
-                        let url = URL.createObjectURL(blob);
-
-                        // step 2: append it to the document
-                        let photosContainer = document.querySelector("#photosContainer");
-                        let img = document.createElement("img");
-                        img.src = url;
-                        photosContainer.appendChild(img);
+                    video.addEventListener("loadeddata", () => {
+                        function listener() {
+                            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+                            ctx.drawImage(video, 0, 0, WIDTH, HEIGHT);
+                            requestAnimationFrame(listener);
+                        }
+                        listener();
                     });
+                    // enable the Take a Photo button and add the event handler
+                    // takePhotoButton.disabled = false;
+                    // takePhotoButton.addEventListener("click", async () => {
+                    //     // step 1: take the photo
+                    //     let blob = await takePhotoFromMediaStream(stream, video);
+                    //     let url = URL.createObjectURL(blob);
+
+                    //     // step 2: append it to the document
+                    //     let photosContainer = document.querySelector("#photosContainer");
+                    //     let img = document.createElement("img");
+                    //     img.src = url;
+                    //     photosContainer.appendChild(img);
+                    // });
                 } catch (e) {
                     // if requesting their camera fails for any reason, display the error message to them
                     videoContainer.textContent = `${e.name} - ${e.message}`;
